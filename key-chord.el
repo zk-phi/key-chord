@@ -24,7 +24,7 @@
 
 ;; Author: David Andersson <l.david.andersson(at)sverige.nu>
 ;; Created: 27 April 2003
-;; Version: 0.6 (2012-10-23)
+;; Version: 0.7 (2017-06-29)
 ;; Keywords: keyboard chord input
 
 ;;; Commentary:
@@ -110,17 +110,6 @@
 
 ;; ########   Tips   ########################################
 ;;
-;; Don't chord key combinations that exists in the languages you typically
-;; write. Otherwise, if you are typing fast, two key intended to be separate
-;; letters might instead trig a chord.
-;; E.g. "uu" would be a good chord in spanish but not in finnish, and
-;; "hj" would be a good chord in english but not in swedish.
-;;
-;; Don't rely solely on /usr/dict/words to find unusual combination.
-;; For example "cv" or "fg" can be quite common in certain kinds of
-;; programming. Grep your own texts to verify that a combination is unusual.
-;; And don't forget to check both permutations: "fg" and "gf".
-;;
 ;; Choose two keys that are close to each other on the keyboard, so they
 ;; can be quickly typed without effort. Chords involving two hands (as
 ;; opposed to two fingers on one hand) are harder to type (quickly).
@@ -183,6 +172,8 @@
 
 ;; ########   History   ########################################
 ;;
+;; 0.7 (2017-06-29) zk-phi
+;; 	Add option `key-chord-safety-interval'
 ;; 0.6 (2012-10-23) l.david.andersson(at)sverige.nu
 ;;      Add key-chord-define-local, key-chord-unset-local, key-chord-unset-global
 ;; 0.5 (2008-09-15) david(at)symsoft.se

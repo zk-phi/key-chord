@@ -205,6 +205,9 @@
   "Max time delay between two press of the same key to be considered a key chord.
 This should normally be a little longer than `key-chord-two-keys-delay'.")
 
+(defvar key-chord-safety-interval 0.08
+  "Min time delay to distinguish a key chord and other inputs.")
+
 (defvar key-chord-in-macros t
   "If nil, don't expand key chords when executing keyboard macros.
 If non-nil, expand chord sequenses in macros, but only if a similar chord was
@@ -225,6 +228,13 @@ typed quickly or slowly when recorded.)")
 (defvar key-chord-in-last-kbd-macro nil)
 (defvar key-chord-defining-kbd-macro nil)
 
+;; Internal vars for
+;; `key-chord-safety-interval'. `key-chord-idle-state' is non-nil iff
+;; at least `key-chord-safety-interval' past after the last
+;; (non-keychord) input.
+(defvar key-chord-idle-state t)
+(defvar key-chord-timer-object nil)
+
 ;;;###autoload
 (defun key-chord-mode (arg)
   "Toggle key chord mode.
@@ -240,10 +250,15 @@ pressed twice.
 			   (> (prefix-numeric-value arg) 0)
 			 (not key-chord-mode)))
   (cond (key-chord-mode
-	 (setq input-method-function 'key-chord-input-method)
+	 (setq input-method-function 'key-chord-input-method
+	       key-chord-timer-object
+	       (run-with-idle-timer key-chord-safety-interval t
+				    (lambda () (setq key-chord-idle-state t))))
 	 (message "Key Chord mode on"))
 	(t
-	 (setq input-method-function nil)
+	 (cancel-timer key-chord-timer-object)
+	 (setq input-method-function  nil
+	       key-chord-timer-object nil)
 	 (message "Key Chord mode off"))))
 
 ;;;###autoload
@@ -326,7 +341,8 @@ Please ignore that."
 
 (defun key-chord-input-method (first-char)
   "Input method controlled by key bindings with the prefix `key-chord'."
-  (if (and (not (eq first-char key-chord-last-unmatched))
+  (if (and key-chord-idle-state
+	   (not (eq first-char key-chord-last-unmatched))
 	   (key-chord-lookup-key (vector 'key-chord first-char)))
       (let ((delay (if (key-chord-lookup-key (vector 'key-chord first-char first-char))
 		       key-chord-one-key-delay
@@ -337,15 +353,17 @@ Please ignore that."
               (when (bound-and-true-p eldoc-mode)
                 (eldoc-pre-command-refresh-echo-area))
 
-	      (sit-for delay 0 'no-redisplay))
+	      (sit-for delay 'no-redisplay))
 	    (progn
-	      (setq key-chord-last-unmatched nil)
+	      (setq key-chord-last-unmatched nil
+		    key-chord-idle-state     nil)
 	      (list first-char))
 	  ;; else input-pending-p
 	  (let* ((input-method-function nil)
 		 (next-char (read-event))
 		 (res (vector 'key-chord first-char next-char)))
-	    (if (key-chord-lookup-key res)
+	    (if (and (key-chord-lookup-key res)
+		     (sit-for key-chord-safety-interval 'no-redisplay))
 		(progn
 		  (setq key-chord-defining-kbd-macro
 			(cons first-char key-chord-defining-kbd-macro))
@@ -354,9 +372,11 @@ Please ignore that."
 	      (setq unread-command-events (cons next-char unread-command-events))
 	      (if (eq first-char next-char)
 		  (setq key-chord-last-unmatched first-char))
+	      (setq key-chord-idle-state nil)
 	      (list first-char)))))
     ;; else no key-chord keymap
-    (setq key-chord-last-unmatched first-char)
+    (setq key-chord-last-unmatched first-char
+	  key-chord-idle-state     nil)
     (list first-char)))
 
 (require 'advice)

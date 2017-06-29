@@ -189,14 +189,14 @@
 
 ;;; Code:
 
-(defvar key-chord-two-keys-delay 0.1	; 0.05 or 0.1
+(defvar key-chord-two-keys-delay 0.15	; 0.05 or 0.1
   "Max time delay between two key press to be considered a key chord.")
 
-(defvar key-chord-one-key-delay 0.2	; 0.2 or 0.3 to avoid first autorepeat
+(defvar key-chord-one-key-delay 0.3	; 0.2 or 0.3 to avoid first autorepeat
   "Max time delay between two press of the same key to be considered a key chord.
 This should normally be a little longer than `key-chord-two-keys-delay'.")
 
-(defvar key-chord-safety-interval 0.08
+(defvar key-chord-safety-interval 0.15
   "Min time delay to distinguish a key chord and other inputs.")
 
 (defvar key-chord-in-macros t

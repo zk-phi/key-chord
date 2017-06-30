@@ -196,7 +196,7 @@
   "Max time delay between two press of the same key to be considered a key chord.
 This should normally be a little longer than `key-chord-two-keys-delay'.")
 
-(defvar key-chord-safety-interval 0.15
+(defvar key-chord-safety-interval 0.2
   "Min time delay to distinguish a key chord and other inputs.")
 
 (defvar key-chord-in-macros t

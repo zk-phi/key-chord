@@ -173,7 +173,7 @@
 ;; ########   History   ########################################
 ;;
 ;; 0.7 (2017-06-29) zk-phi
-;; 	Add option `key-chord-safety-interval'
+;; 	Add option `key-chord-safety-interval-backward/forward'
 ;; 0.6 (2012-10-23) l.david.andersson(at)sverige.nu
 ;;      Add key-chord-define-local, key-chord-unset-local, key-chord-unset-global
 ;; 0.5 (2008-09-15) david(at)symsoft.se
@@ -196,8 +196,11 @@
   "Max time delay between two press of the same key to be considered a key chord.
 This should normally be a little longer than `key-chord-two-keys-delay'.")
 
-(defvar key-chord-safety-interval 0.2
-  "Min time delay to distinguish a key chord and other inputs.")
+(defvar key-chord-safety-interval-backward 0.1
+  "Min time to distinguish a key chord and preceding inputs.")
+
+(defvar key-chord-safety-interval-forward 0.25
+  "Min time delay to distinguish a key chord and following inputs.")
 
 (defvar key-chord-in-macros t
   "If nil, don't expand key chords when executing keyboard macros.
@@ -220,9 +223,9 @@ typed quickly or slowly when recorded.)")
 (defvar key-chord-defining-kbd-macro nil)
 
 ;; Internal vars for
-;; `key-chord-safety-interval'. `key-chord-idle-state' is non-nil iff
-;; at least `key-chord-safety-interval' past after the last
-;; (non-keychord) input.
+;; `key-chord-safety-interval-backward'. `key-chord-idle-state' is
+;; non-nil iff at least `key-chord-safety-interval-backward' past
+;; after the last (non-keychord) input.
 (defvar key-chord-idle-state t)
 (defvar key-chord-timer-object nil)
 
@@ -243,7 +246,7 @@ pressed twice.
   (cond (key-chord-mode
 	 (setq input-method-function 'key-chord-input-method
 	       key-chord-timer-object
-	       (run-with-idle-timer key-chord-safety-interval t
+	       (run-with-idle-timer key-chord-safety-interval-backward t
 				    (lambda () (setq key-chord-idle-state t))))
 	 (message "Key Chord mode on"))
 	(t
@@ -354,7 +357,7 @@ Please ignore that."
 		 (next-char (read-event))
 		 (res (vector 'key-chord first-char next-char)))
 	    (if (and (key-chord-lookup-key res)
-		     (sit-for key-chord-safety-interval 'no-redisplay))
+		     (sit-for key-chord-safety-interval-forward 'no-redisplay))
 		(progn
 		  (setq key-chord-defining-kbd-macro
 			(cons first-char key-chord-defining-kbd-macro))

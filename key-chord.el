@@ -199,7 +199,7 @@ This should normally be a little longer than `key-chord-two-keys-delay'.")
 (defvar key-chord-safety-interval-backward 0.1
   "Min time to distinguish a key chord and preceding inputs.")
 
-(defvar key-chord-safety-interval-forward 0.25
+(defvar key-chord-safety-interval-forward 0.35
   "Min time delay to distinguish a key chord and following inputs.")
 
 (defvar key-chord-in-macros t

@@ -1,3 +1,4 @@
+;;; -*- lexical-binding: t -*-
 ;;; key-chord.el --- map pairs of simultaneously pressed keys to commands
 ;;-------------------------------------------------------------------
 ;;
